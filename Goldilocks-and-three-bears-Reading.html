@@ -3,420 +3,225 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Goldilocks and the Three Bears - Reading Practice</title>
-    <script ="auth.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&display=swap" rel="stylesheet">
+    <title>Goldilocks and the Three Bears 🐻</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:ital,wght@0,400;0,700;1,400;1,700&family=Zen+Maru+Gothic:wght@500;700&display=swap" rel="stylesheet">
     <style>
         :root {
             --primary-brown: #8B4513;
-            --accent-orange: #e67e22;
-            --success-green: #27ae60;
+            --accent-orange: #ffa042;
+            --accent-pink: #ff78ae;
+            --success-green: #6ab04c;
             --bg-color: #fff9f0;
-            --text-color: #333;
+            --card-bg: #ffffff;
+            --text-color: #2c3e50;
+            --border-color: #e2e8f0;
         }
 
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body, button, p, div, h1, span {
+            font-family: 'Comic Neue', 'Zen Maru Gothic', cursive, sans-serif !important;
+        }
+        
         body {
-            font-family: 'Comic Neue', cursive, sans-serif;
             background-color: var(--bg-color);
             color: var(--text-color);
-            margin: 0;
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
+            padding: 15px;
         }
 
         .container {
-            width: 95%;
-            max-width: 650px;
-            background: white;
-            padding: 30px;
-            border-radius: 25px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            text-align: center;
-        }
-
-        h1 { 
-            color: var(--primary-brown); 
-            margin-bottom: 20px; 
-            font-size: 2rem; 
-        }
-
-        .scene-container { display: none; }
-        .scene-container.active { display: block; }
-
-        .sentence {
-            font-size: 1.5rem;
-            font-weight: 700;
-            line-height: 1.6;
-            margin: 20px 0;
-            min-height: 5rem;
-            text-align: left;
-            background: #faf2eb;
-            padding: 15px 20px;
-            border-radius: 15px;
-            border-left: 6px solid var(--primary-brown);
-        }
-
-        .image-box {
-            margin-top: 20px;
-            display: none;
-            animation: fadeIn 0.5s forwards;
-        }
-
-        .scene-image {
             width: 100%;
-            max-height: 350px;
-            object-fit: contain;
-            border-radius: 15px;
-            border: 3px solid #eee;
+            max-width: 750px;
+            background: var(--card-bg);
+            padding: 25px;
+            border-radius: 24px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.06);
+            text-align: center;
+            position: relative;
         }
 
-        .translation {
-            margin-top: 15px;
-            font-size: 1.1rem;
-            color: #555;
+        h1 {
+            color: var(--primary-brown);
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+            font-weight: 700;
+        }
+
+        /* Progress Bar */
+        .progress-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            gap: 10px;
+        }
+        .progress-bar {
+            flex: 1; height: 10px; background-color: #e2e8f0; border-radius: 5px; overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%; width: 0%; background-color: var(--primary-brown); transition: width 0.3s ease;
+        }
+
+        /* Game Screen */
+        #story-box { display: block; }
+        .scene-card { display: none; animation: fadeIn 0.4s ease forwards; }
+        .scene-card.active { display: block; }
+        .scene-header { font-size: 1.1rem; font-weight: bold; color: #718096; margin-bottom: 10px; }
+
+        .story-side {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            background: #faf2eb;
+            padding: 22px;
+            border-radius: 18px;
+            border: 2px solid var(--border-color);
+            position: relative;
+            min-height: 250px;
+            text-align: left;
+        }
+        
+        .story-line {
+            margin-bottom: 8px;
+        }
+
+        .story-text {
+            font-size: 1.3rem; font-weight: bold; line-height: 1.6; color: #334155;
+            user-select: none;
+        }
+
+        .clickable-word {
+            display: inline-block;
+            cursor: pointer;
+            border-bottom: 2px dashed transparent;
+            border-radius: 4px;
+            padding: 0 2px;
+            transition: 0.15s;
+        }
+        .clickable-word:hover {
+            background: #ffe3ec;
+            color: #d64d8a;
+            border-bottom-color: var(--accent-pink);
+        }
+
+        .audio-controls { display: flex; gap: 10px; margin-top: auto; padding-top: 15px; flex-wrap: wrap; }
+        .speaker-btn {
+            background: var(--accent-pink); color: white; border: none; padding: 10px 18px;
+            border-radius: 20px; font-weight: bold; cursor: pointer; font-size: 1rem;
+            box-shadow: 0 3px 0 #d64d8a; transition: 0.1s;
+        }
+        .speaker-btn:active { transform: translateY(2px); box-shadow: none; }
+
+        .picture-btn {
+            background: var(--accent-orange); color: white; border: none; padding: 10px 18px;
+            border-radius: 20px; font-weight: bold; cursor: pointer; font-size: 1rem;
+            box-shadow: 0 3px 0 #d97d1e; transition: 0.1s; margin-left: auto;
+        }
+        .picture-btn:active { transform: translateY(2px); box-shadow: none; }
+
+        /* イラスト & 和訳表示 */
+        .illustration-overlay {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(255, 255, 255, 0.98); border-radius: 18px;
+            display: none; flex-direction: column; justify-content: center; align-items: center;
+            z-index: 10; padding: 20px; animation: fadeIn 0.2s ease;
+            box-sizing: border-box;
+        }
+        .illustration-overlay.active { display: flex; }
+        
+        .illustration-image { 
+            width: 100%; 
+            max-width: 480px;
+            max-height: 220px; 
+            object-fit: contain; 
+            border-radius: 12px; 
+            border: 2px solid #eee;
+        }
+
+        .translation-text {
+            margin-top: 12px;
+            font-size: 1.05rem;
+            color: #444;
             background: #f9f9f9;
-            padding: 12px 15px;
+            padding: 10px 15px;
             border-radius: 10px;
             border-left: 5px solid var(--accent-orange);
             text-align: left;
+            width: 100%;
+            max-width: 480px;
             line-height: 1.5;
         }
 
-        .controls {
-            margin-top: 25px;
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            align-items: center;
+        .close-overlay-btn {
+            position: absolute; top: 10px; right: 15px; background: #ef4444; color: white;
+            border: none; width: 32px; height: 32px; border-radius: 50%; font-size: 1.2rem;
+            font-weight: bold; cursor: pointer; display: flex; justify-content: center; align-items: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2); z-index: 11;
         }
 
-        button {
-            padding: 12px 25px;
-            font-family: inherit;
-            font-weight: bold;
-            border: none;
-            border-radius: 50px;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-
-        .speaker-btn {
-            background: var(--accent-orange);
-            color: white;
-            width: 60px; height: 60px;
-            border-radius: 50%;
-            font-size: 1.6rem;
-            box-shadow: 0 4px 0 #d35400;
-            display: flex; align-items: center; justify-content: center;
-            flex-shrink: 0;
-        }
-
-        .check-btn {
-            background: var(--primary-brown);
-            color: white;
-            font-size: 1.2rem;
-            box-shadow: 0 4px 0 #5c2d0c;
-        }
-
+        .nav-row { margin-top: 20px; display: flex; justify-content: flex-end; }
         .next-btn {
-            background: var(--success-green);
-            color: white;
-            font-size: 1.2rem;
+            background: var(--success-green); color: white; border: none; padding: 12px 30px;
+            border-radius: 50px; font-size: 1.1rem; font-weight: bold; cursor: pointer;
             box-shadow: 0 4px 0 #1e8449;
-            display: none;
         }
+        .next-btn:active { transform: translateY(2px); box-shadow: none; }
 
-        button:active { transform: translateY(3px); box-shadow: none; }
-
-        .final-page {
-            display: none;
-            line-height: 1.8;
-        }
-
+        /* Result Page */
+        #result-page { display: none; padding: 20px 10px; text-align: left; }
+        #result-page h2 { color: var(--primary-brown); font-size: 2rem; margin-bottom: 15px; text-align: center; }
+        
         .author-box {
-            text-align: left;
             background: #fcf8e3;
             padding: 20px;
             border-radius: 15px;
-            margin: 25px 0;
+            margin: 20px 0;
             border: 1px dashed #faebcc;
             color: #8a6d3b;
+            line-height: 1.7;
         }
 
         .author-box h3 {
             margin-top: 0;
             color: var(--primary-brown);
             font-size: 1.2rem;
+            margin-bottom: 10px;
         }
 
         .author-box p {
             font-size: 0.95rem;
-            line-height: 1.6;
             margin-bottom: 10px;
         }
 
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .btn-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <div id="exercise">
-        <h1>Goldilocks and the Three Bears</h1>
-
-        <div id="scenes">
-            <!-- Scene 1 -->
-            <div class="scene-container active" id="scene1">
-                <div class="sentence" id="txt1">
-                    Goldilocks lives on one side of the forest.<br>
-                    The Three Bears live on the other side.
-                </div>
-                <div class="image-box" id="imgBox1">
-                    <img src="images-Goldilocks/map.jpg" alt="Map" class="scene-image">
-                    <div class="translation">
-                        ゴルディロックスは森の片側に住んでいます。<br>
-                        3頭のくまは反対側に住んでいます。
-                    </div>
-                </div>
-                <div class="controls">
-                    <button class="speaker-btn" onclick="speakWord('txt1')">🔊</button>
-                    <button class="check-btn" id="check1" onclick="showImage(1)">Check!</button>
-                    <button class="next-btn" id="next1" onclick="nextScene(1)">Next ➔</button>
-                </div>
-            </div>
-
-            <!-- Scene 2 -->
-            <div class="scene-container" id="scene2">
-                <div class="sentence" id="txt2">
-                    One day, Goldilocks goes for a walk.<br>
-                    She goes deeper and deeper into the forest.
-                </div>
-                <div class="image-box" id="imgBox2">
-                    <img src="images-Goldilocks/walking.jpg" alt="Walking" class="scene-image">
-                    <div class="translation">
-                        ある日、ゴルディロックスはお散歩に出かけます。<br>
-                        彼女は森の奥深くへと進んでいきます。
-                    </div>
-                </div>
-                <div class="controls">
-                    <button class="speaker-btn" onclick="speakWord('txt2')">🔊</button>
-                    <button class="check-btn" id="check2" onclick="showImage(2)">Check!</button>
-                    <button class="next-btn" id="next2" onclick="nextScene(2)">Next ➔</button>
-                </div>
-            </div>
-
-            <!-- Scene 3 -->
-            <div class="scene-container" id="scene3">
-                <div class="sentence" id="txt3">
-                    Oh no, I am lost!<br>
-                    She is hungry and tired.<br>
-                    Then, she sees a cute house.<br>
-                    (Knock, knock, knock!)<br>
-                    Nobody is home. She goes inside!
-                </div>
-                <div class="image-box" id="imgBox3">
-                    <img src="images-Goldilocks/bears-house.jpg" alt="Bears House" class="scene-image">
-                    <div class="translation">
-                        大変、迷子になっちゃった！<br>
-                        彼女はお腹が空いて、疲れていました。<br>
-                        すると、可愛いお家が見えます。<br>
-                        （トントン、トン！）<br>
-                        誰もいません。彼女は中に入ってしまいます！
-                    </div>
-                </div>
-                <div class="controls">
-                    <button class="speaker-btn" onclick="speakWord('txt3')">🔊</button>
-                    <button class="check-btn" id="check3" onclick="showImage(3)">Check!</button>
-                    <button class="next-btn" id="next3" onclick="nextScene(3)">Next ➔</button>
-                </div>
-            </div>
-
-            <!-- Scene 4 -->
-            <div class="scene-container" id="scene4">
-                <div class="sentence" id="txt4">
-                    She sees three bowls.<br>
-                    🍲 Papa's bowl: This is too hot!<br>
-                    🧊 Mama's bowl: This is too cold!<br>
-                    ✨ Baby's bowl: This is just right! (Yum! She eats it all!)
-                </div>
-                <div class="image-box" id="imgBox4">
-                    <img src="images-Goldilocks/eating-porridge.jpg" alt="Eating Porridge" class="scene-image">
-                    <div class="translation">
-                        3つのスープのお碗が見えます。<br>
-                        🍲 パパのお碗：熱すぎる！<br>
-                        🧊 ママのお碗：冷たすぎる！<br>
-                        ✨ 赤ちゃんのお碗：ちょうどいい！（おいしい！全部食べちゃった！）
-                    </div>
-                </div>
-                <div class="controls">
-                    <button class="speaker-btn" onclick="speakWord('txt4')">🔊</button>
-                    <button class="check-btn" id="check4" onclick="showImage(4)">Check!</button>
-                    <button class="next-btn" id="next4" onclick="nextScene(4)">Next ➔</button>
-                </div>
-            </div>
-
-            <!-- Scene 5 -->
-            <div class="scene-container" id="scene5">
-                <div class="sentence" id="txt5">
-                    She sees three chairs.<br>
-                    🪨 Papa's chair: This is too hard!<br>
-                    ☁️ Mama's chair: This is too soft!<br>
-                    ✨ Baby's chair: This is just right! (CRASH! Oh no, it breaks!)
-                </div>
-                <div class="image-box" id="imgBox5">
-                    <img src="images-Goldilocks/sitting.jpg" alt="Sitting" class="scene-image">
-                    <div class="translation">
-                        3つの椅子が見えます。<br>
-                        🪨 パパの椅子：硬すぎる！<br>
-                        ☁️ ママの椅子：柔らかすぎる！<br>
-                        ✨ 赤ちゃんの椅子：ちょうどいい！（バシャン！大変、壊れちゃった！）
-                    </div>
-                </div>
-                <div class="controls">
-                    <button class="speaker-btn" onclick="speakWord('txt5')">🔊</button>
-                    <button class="check-btn" id="check5" onclick="showImage(5)">Check!</button>
-                    <button class="next-btn" id="next5" onclick="nextScene(5)">Next ➔</button>
-                </div>
-            </div>
-
-            <!-- Scene 6 -->
-            <div class="scene-container" id="scene6">
-                <div class="sentence" id="txt6">
-                    She sees three beds.<br>
-                    ⛰️ Papa's bed: This is too high!<br>
-                    🕳️ Mama's bed: This is too low!<br>
-                    ✨ Baby's bed: This is just right! (Zzz... She falls asleep.)
-                </div>
-                <div class="image-box" id="imgBox6">
-                    <img src="images-Goldilocks/sleeping.jpg" alt="Sleeping" class="scene-image">
-                    <div class="translation">
-                        3つのベッドが見えます。<br>
-                        ⛰️ パパのベッド：高すぎる！<br>
-                        🕳️ ママのベッド：低すぎる！<br>
-                        ✨ 赤ちゃんのベッド：ちょうどいい！（スースー… 眠ってしまいました。）
-                    </div>
-                </div>
-                <div class="controls">
-                    <button class="speaker-btn" onclick="speakWord('txt6')">🔊</button>
-                    <button class="check-btn" id="check6" onclick="showImage(6)">Check!</button>
-                    <button class="next-btn" id="next6" onclick="nextScene(6)">Next ➔</button>
-                </div>
-            </div>
-
-            <!-- Scene 7 -->
-            <div class="scene-container" id="scene7">
-                <div class="sentence" id="txt7">
-                    The Three Bears come home!<br>
-                    ✨ Baby bear: Who ate my porridge?
-                </div>
-                <div class="image-box" id="imgBox7">
-                    <img src="images-Goldilocks/empty-bowl.jpg" alt="Empty Bowl" class="scene-image">
-                    <div class="translation">
-                        3頭のくまが帰ってきました！<br>
-                        ✨ 赤ちゃんぐま：誰が僕のスープを食べたの？
-                    </div>
-                </div>
-                <div class="controls">
-                    <button class="speaker-btn" onclick="speakWord('txt7')">🔊</button>
-                    <button class="check-btn" id="check7" onclick="showImage(7)">Check!</button>
-                    <button class="next-btn" id="next7" onclick="nextScene(7)">Next ➔</button>
-                </div>
-            </div>
-
-            <!-- Scene 8 -->
-            <div class="scene-container" id="scene8">
-                <div class="sentence" id="txt8">
-                    ✨ Baby bear: Who broke my chair?
-                </div>
-                <div class="image-box" id="imgBox8">
-                    <img src="images-Goldilocks/broken-chair.jpg" alt="Broken Chair" class="scene-image">
-                    <div class="translation">
-                        ✨ 赤ちゃんぐま：誰が僕の椅子を壊したの？
-                    </div>
-                </div>
-                <div class="controls">
-                    <button class="speaker-btn" onclick="speakWord('txt8')">🔊</button>
-                    <button class="check-btn" id="check8" onclick="showImage(8)">Check!</button>
-                    <button class="next-btn" id="next8" onclick="nextScene(8)">Next ➔</button>
-                </div>
-            </div>
-
-            <!-- Scene 9 -->
-            <div class="scene-container" id="scene9">
-                <div class="sentence" id="txt9">
-                    ✨ Baby bear: Who's in my bed?<br>
-                    AHHH!<br>
-                    Goldilocks wakes up!<br>
-                    She is so scared!
-                </div>
-                <div class="image-box" id="imgBox9">
-                    <img src="images-Goldilocks/waking-up.jpg" alt="Waking Up" class="scene-image">
-                    <div class="translation">
-                        ✨ 赤ちゃんぐま：僕のベッドに誰かいる！<br>
-                        キャー！<br>
-                        ゴルディロックスは目を覚まします！<br>
-                        とってもびっくり！
-                    </div>
-                </div>
-                <div class="controls">
-                    <button class="speaker-btn" onclick="speakWord('txt9')">🔊</button>
-                    <button class="check-btn" id="check9" onclick="showImage(9)">Check!</button>
-                    <button class="next-btn" id="next9" onclick="nextScene(9)">Next ➔</button>
-                </div>
-            </div>
-
-            <!-- Scene 10 -->
-            <div class="scene-container" id="scene10">
-                <div class="sentence" id="txt10">
-                    She runs, runs, runs all the way home!
-                </div>
-                <div class="image-box" id="imgBox10">
-                    <img src="images-Goldilocks/running-back.jpg" alt="Running Back" class="scene-image">
-                    <div class="translation">
-                        彼女は家まで走って、走って、走って帰ります！
-                    </div>
-                </div>
-                <div class="controls">
-                    <button class="speaker-btn" onclick="speakWord('txt10')">🔊</button>
-                    <button class="check-btn" id="check10" onclick="showImage(10)">Check!</button>
-                    <button class="next-btn" id="next10" onclick="nextScene(10)">Next ➔</button>
-                </div>
-            </div>
-
-            <!-- Scene 11 -->
-            <div class="scene-container" id="scene11">
-                <div class="sentence" id="txt11">
-                    Goldilocks comes home.<br>
-                    Her mama hugs her, but she is angry.<br>
-                    👵 Mama:<br>
-                    Goldilocks! Don't enter other people's homes!<br>
-                    🙇‍♀️ Goldilocks:<br>
-                    I'm sorry, Mama. I promise!
-                </div>
-                <div class="image-box" id="imgBox11">
-                    <img src="images-Goldilocks/back-home.jpg" alt="Back Home" class="scene-image">
-                    <div class="translation">
-                        ゴルディロックスはお家に着きます。<br>
-                        ママはギュッと抱きしめますが、怒っています。<br>
-                        👵 ママ：ゴルディロックス！他人の家に入ってはダメよ！<br>
-                        🙇‍♀️ ゴルディロックス：ごめんなさい、ママ。もうしないって約束する！
-                    </div>
-                </div>
-                <div class="controls">
-                    <button class="speaker-btn" onclick="speakWord('txt11')">🔊</button>
-                    <button class="check-btn" id="check11" onclick="showImage(11)">Check!</button>
-                    <button class="next-btn" id="next11" onclick="finish()">Finish!</button>
-                </div>
-            </div>
-        </div>
+    <h1>Goldilocks and the Three Bears 🐻</h1>
+    
+    <div class="progress-container" id="mainProgress">
+        <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
     </div>
 
-    <!-- Final Page -->
-    <div id="final-page" class="final-page">
-        <h2 style="color: var(--primary-brown);">Great Job! 🌟</h2>
-        <p>最後まで読めたね！素晴らしい！</p>
+    <div id="story-box"></div>
+
+    <div id="result-page">
+        <h2>Great Job! 🌟</h2>
+        <p style="text-align: center; font-size: 1.2rem;">最後まで読めたね！素晴らしい！</p>
         
         <div class="author-box">
             <h3>📖 『3頭のくまとゴルディロックス』について</h3>
@@ -425,53 +230,296 @@
             <p>初期の物語では侵入者が「行儀の悪いおばあさん」でしたが、19世紀半ば以降に「金髪の少女（ゴルディロックス）」へと変わり、くま達も「パパ・ママ・赤ちゃん」の家族として描かれるようになり、現代のような親しみやすいストーリーに進化しました。</p>
         </div>
 
-        <button class="check-btn" onclick="location.reload()" style="margin-top: 10px;">もう一度 練習する</button>
+        <div class="btn-container">
+            <button class="next-btn" style="background: var(--primary-brown); box-shadow:0 4px 0 #5c2d0c;" onclick="location.reload()">もう一度 練習する 🔄</button>
+        </div>
     </div>
 </div>
 
 <script>
+    const storyData = [
+        {
+            scene: "Page 1",
+            imgName: "map.jpg",
+            japanese: "ゴルディロックスは森の片側に住んでいます。<br>3頭のくまは反対側に住んでいます。",
+            textLines: [
+                "Goldilocks lives on one side of the forest.",
+                "The Three Bears live on the other side."
+            ]
+        },
+        {
+            scene: "Page 2",
+            imgName: "walking.jpg",
+            japanese: "ある日、ゴルディロックスはお散歩に出かけます。<br>彼女は森の奥深くへと進んでいきます。",
+            textLines: [
+                "One day, Goldilocks goes for a walk.",
+                "She goes deeper and deeper into the forest."
+            ]
+        },
+        {
+            scene: "Page 3",
+            imgName: "bears-house.jpg",
+            japanese: "「大変、迷子になっちゃった！」<br>彼女はお腹が空いて、疲れていました。<br>すると、可愛いお家が見えます。<br>（トントン、トン！）<br>誰もいません。彼女は中に入ってしまいます！",
+            textLines: [
+                "\"Oh no, I am lost!\" she says.",
+                "She is hungry and tired.",
+                "Then, she sees a cute house.",
+                "(Knock, knock, knock!)",
+                "Nobody is home. She goes inside!"
+            ]
+        },
+        {
+            scene: "Page 4",
+            imgName: "eating-porridge.jpg",
+            japanese: "彼女は3つのスープのお碗を見つけます。<br>大きなパパのお碗を食べると、「これは熱すぎる！」<br>中くらいのママのお碗を食べると、「これは冷たすぎる！」<br>ちいさな赤ちゃんのお碗を食べると、「これはちょうどいい！」<br>（おいしい！全部食べちゃった！）",
+            textLines: [
+                "She sees three bowls of porridge.",
+                "First, she tastes the Great Big Bear's bowl. \"This is too hot!\" she says.",
+                "Next, she tastes the Middle-sized Bear's bowl. \"This is too cold!\" she says.",
+                "Finally, she tastes the Little Baby Bear's bowl. \"This is just right!\" she says, and she eats it all up!"
+            ]
+        },
+        {
+            scene: "Page 5",
+            imgName: "sitting.jpg",
+            japanese: "彼女は3つの椅子を見つけます。<br>大きなパパの椅子に座ると、「硬すぎる！」<br>中くらいのママの椅子に座ると、「柔らかすぎる！」<br>ちいさな赤ちゃんの椅子に座ると、「ちょうどいい！」<br>（バシャン！大変、壊れちゃった！）",
+            textLines: [
+                "She sees three chairs.",
+                "She sits in the Great Big Bear's chair. \"This is too hard!\" she says.",
+                "She sits in the Middle-sized Bear's chair. \"This is too soft!\" she says.",
+                "She sits in the Little Baby Bear's chair. \"This is just right!\" she says.",
+                "(CRASH! Oh no, it breaks!)"
+            ]
+        },
+        {
+            scene: "Page 6",
+            imgName: "sleeping.jpg",
+            japanese: "彼女は3つのベッドを見つけます。<br>大きなパパのベッドに横になると、「高すぎる！」<br>中くらいのママのベッドに横になると、「低すぎる！」<br>ちいさな赤ちゃんのベッドに横になると、「ちょうどいい！」<br>（スースー… 眠ってしまいました。）",
+            textLines: [
+                "She sees three beds.",
+                "She lies on the Great Big Bear's bed. \"This is too high!\" she says.",
+                "She lies on the Middle-sized Bear's bed. \"This is too low!\" she says.",
+                "She lies on the Little Baby Bear's bed. \"This is just right!\" she says.",
+                "(Zzz... She falls asleep.)"
+            ]
+        },
+        {
+            scene: "Page 7",
+            imgName: "empty-bowl.jpg",
+            japanese: "3頭のくまが帰ってきました！<br>「僕のスープを誰かが食べたの？」と赤ちゃんぐまが言いました。",
+            textLines: [
+                "The Three Bears come home!",
+                "\"Who ate my porridge?\" asks Baby Bear."
+            ]
+        },
+        {
+            scene: "Page 8",
+            imgName: "broken-chair.jpg",
+            japanese: "「僕の椅子を誰かが壊したの？」と赤ちゃんぐまが言いました。",
+            textLines: [
+                "\"Who broke my chair?\" asks Baby Bear."
+            ]
+        },
+        {
+            scene: "Page 9",
+            imgName: "waking-up.jpg",
+            japanese: "「僕のベッドに誰かがいる！」と赤ちゃんぐまが言いました。<br>「キャー！」<br>ゴルディロックスは目を覚まします！とてもびっくりしています！",
+            textLines: [
+                "\"Who's in my bed?\" asks Baby Bear.",
+                "\"AHHH!\"",
+                "Goldilocks wakes up! She is so scared!"
+            ]
+        },
+        {
+            scene: "Page 10",
+            imgName: "running-back.jpg",
+            japanese: "彼女は家まで走って、走って、走って帰ります！",
+            textLines: [
+                "She runs, runs, runs all the way home!"
+            ]
+        },
+        {
+            scene: "Page 11",
+            imgName: "back-home.jpg",
+            japanese: "ゴルディロックスはお家に着きます。<br>ママはギュッと抱きしめますが、怒っています。<br>「ゴルディロックス！他人の家に入ってはダメよ！」<br>「ごめんなさい、ママ。もうしないって約束する！」",
+            textLines: [
+                "Goldilocks comes home.",
+                "Her mama hugs her, but she is angry.",
+                "\"Goldilocks! Don't enter other people's homes!\" says Mama.",
+                "\"I'm sorry, Mama. I promise!\" says Goldilocks."
+            ]
+        }
+    ];
+
+    let currentSceneIdx = 0;
     let preferredVoice = null;
 
     function loadVoices() {
         const voices = window.speechSynthesis.getVoices();
         if (voices.length === 0) return;
+
         preferredVoice = 
             voices.find(v => v.lang === "en-US" && v.name.includes("Google US English")) ||
             voices.find(v => v.lang === "en-US" && v.name.includes("Samantha")) ||
-            voices.find(v => v.lang.startsWith("en-US") && (v.name.includes("Female") || v.name.includes("Zira")));
+            voices.find(v => v.lang.startsWith("en-US")) ||
+            voices.find(v => v.lang.startsWith("en"));
+    }
+    
+    if (typeof window !== 'undefined' && window.speechSynthesis) {
+        window.speechSynthesis.onvoiceschanged = loadVoices;
+        loadVoices();
     }
 
-    window.speechSynthesis.onvoiceschanged = loadVoices;
-    loadVoices();
+    // 読み上げテキストから余分な記号を整える関数
+    function formatTextForSpeech(text) {
+        let prepared = text
+            .replace(/[\u{1F300}-\u{1F9FF}]|[\u{2600}-\u{26FF}]|[\u{2700}-\u{27BF}]|[\u{1F600}-\u{1F64F}]|[\u{1F680}-\u{1F6FF}]/gu, '')
+            .replace(/\?!/g, "?")
+            .replace(/!\?/g, "?")
+            .replace(/["“]/g, "")
+            .trim();
 
-    function speakWord(elementId) {
-        const text = document.getElementById(elementId).innerText;
-        if (!text) return;
-        const synth = window.speechSynthesis;
-        synth.cancel(); 
-        const uttr = new SpeechSynthesisUtterance(text);
+        return prepared;
+    }
+
+    function speakText(text) {
+        window.speechSynthesis.cancel();
+        let processedText = formatTextForSpeech(text);
+        if (!processedText) return;
+
+        const uttr = new SpeechSynthesisUtterance(processedText);
         if (preferredVoice) uttr.voice = preferredVoice;
-        else uttr.lang = "en-US";
-        uttr.rate = 0.8;
-        uttr.pitch = 1.0;
-        synth.speak(uttr);
+        
+        uttr.rate = 0.65;
+        uttr.pitch = 1.1;
+        
+        window.speechSynthesis.speak(uttr);
     }
 
-    function showImage(num) {
-        document.getElementById('imgBox' + num).style.display = 'block';
-        document.getElementById('check' + num).style.display = 'none';
-        document.getElementById('next' + num).style.display = 'inline-block';
+    async function speakLinesSequence(sceneIdx) {
+        window.speechSynthesis.cancel();
+        const textLines = storyData[sceneIdx].textLines;
+        
+        for (let i = 0; i < textLines.length; i++) {
+            if (currentSceneIdx !== sceneIdx) break; 
+            
+            const line = textLines[i];
+            const cleanText = formatTextForSpeech(line);
+            if (!cleanText) continue;
+
+            const sentences = cleanText.match(/[^.!?]+[.!?]+/g) || [cleanText];
+            
+            for (let j = 0; j < sentences.length; j++) {
+                if (currentSceneIdx !== sceneIdx) break;
+                await playSinglePhrase(sentences[j].trim());
+                if (currentSceneIdx !== sceneIdx) break;
+                await new Promise(resolve => setTimeout(resolve, 350));
+            }
+            
+            if (currentSceneIdx !== sceneIdx) break;
+            await new Promise(resolve => setTimeout(resolve, 450));
+        }
     }
 
-    function nextScene(current) {
-        document.getElementById('scene' + current).classList.remove('active');
-        document.getElementById('scene' + (current + 1)).classList.add('active');
+    function playSinglePhrase(phrase) {
+        return new Promise(resolve => {
+            let processedText = formatTextForSpeech(phrase);
+            if (!processedText) {
+                resolve();
+                return;
+            }
+            
+            const uttr = new SpeechSynthesisUtterance(processedText);
+            if (preferredVoice) uttr.voice = preferredVoice;
+            
+            uttr.rate = 0.65;
+            uttr.pitch = 1.1;
+            uttr.onend = () => resolve();
+            uttr.onerror = () => resolve();
+            window.speechSynthesis.speak(uttr);
+        });
     }
 
-    function finish() {
-        document.getElementById('exercise').style.display = 'none';
-        document.getElementById('final-page').style.display = 'block';
+    function createClickableText(lineStr) {
+        const words = lineStr.split(" ");
+        return words.map(word => {
+            const cleanWord = word.replace(/[^a-zA-Z0-9'$]/g, "");
+            if(cleanWord.length === 0) return word;
+            return `<span class="clickable-word" onclick="event.stopPropagation(); speakText('${cleanWord}')">${word}</span>`;
+        }).join(" ");
     }
+
+    function toggleOverlay(sIdx, show) {
+        const overlay = document.getElementById(`overlay-${sIdx}`);
+        if (show) overlay.classList.add('active');
+        else overlay.classList.remove('active');
+    }
+
+    function initApp() {
+        const box = document.getElementById('story-box');
+        box.innerHTML = '';
+
+        storyData.forEach((data, sIdx) => {
+            const card = document.createElement('div');
+            card.className = `scene-card ${sIdx === 0 ? 'active' : ''}`;
+            card.id = `scene-${sIdx}`;
+
+            let linesHtml = '';
+            data.textLines.forEach((line, lIdx) => {
+                const clickableLine = createClickableText(line);
+                linesHtml += `
+                    <div class="story-line" id="s${sIdx}-l${lIdx}">
+                        <p class="story-text">${clickableLine}</p>
+                    </div>
+                `;
+            });
+
+            let audioBtnHtml = `<button class="speaker-btn" onclick="speakLinesSequence(${sIdx})">🔊 Play All</button>`;
+            audioBtnHtml += `<button class="picture-btn" onclick="toggleOverlay(${sIdx}, true)">🎨 Check!</button>`;
+
+            card.innerHTML = `
+                <div class="scene-header">${data.scene}</div>
+                <div class="story-side">
+                    <div class="illustration-overlay" id="overlay-${sIdx}">
+                        <button class="close-overlay-btn" onclick="toggleOverlay(${sIdx}, false)">×</button>
+                        <img src="images-Goldilocks/${data.imgName}" class="illustration-image" alt="${data.scene}">
+                        <div class="translation-text">${data.japanese}</div>
+                    </div>
+                    <div style="display: flex; flex-direction: column;">
+                        ${linesHtml}
+                    </div>
+                    <div class="audio-controls">${audioBtnHtml}</div>
+                </div>
+                <div class="nav-row">
+                    <button class="next-btn" onclick="goNext(${sIdx})">${sIdx === storyData.length - 1 ? 'Finish!' : 'Next ➔'}</button>
+                </div>
+            `;
+            box.appendChild(card);
+        });
+        updateProgressBar();
+    }
+
+    function updateProgressBar() {
+        const percent = ((currentSceneIdx + 1) / storyData.length) * 100;
+        document.getElementById('progressFill').style.width = percent + '%';
+    }
+
+    function goNext(current) {
+        window.speechSynthesis.cancel();
+        document.getElementById(`scene-${current}`).classList.remove('active');
+        currentSceneIdx++;
+        
+        if (currentSceneIdx < storyData.length) {
+            document.getElementById(`scene-${currentSceneIdx}`).classList.add('active');
+            updateProgressBar();
+        } else {
+            updateProgressBar();
+            document.getElementById('story-box').style.display = 'none';
+            document.getElementById('result-page').style.display = 'block';
+        }
+    }
+
+    window.addEventListener('DOMContentLoaded', initApp);
 </script>
 </body>
 </html>
